@@ -11,34 +11,31 @@ public class NutsMessage extends Message{
 	private Message msg;
 	private Connection client;
 	
-	public NutsMessage(Message outerMessage) {
-		msg.setSubject(msg.getSubject() + "." + outerMessage.getSubject());
-	}
-
 	public NutsMessage(Connection newClient) {
 		msg = new Message();
 		client = newClient;
 	}
 	
-	public NutsMessage(String subject, String data, Connection newClient) {
-        msg = new Message(subject, null, data.getBytes());
-        client = newClient;
-    }
-	
-	public NutsMessage(String subject, Connection newClient) {
-        msg = new Message(subject, null, null);
-        client = newClient;
-    }
-	
-	public NutsMessage(String subject, String reply, byte[] data, Connection newClient) {
-        msg = new Message(subject, reply, data);
-        client = newClient;
-    }
+//	public NutsMessage(String subject, String data, Connection newClient) {
+//        msg = new Message(subject, null, data.getBytes());
+//        client = newClient;
+//    }
+//	
+//	public NutsMessage(String subject, Connection newClient) {
+//        msg = new Message(subject, null, null);
+//        client = newClient;
+//    }
+//	
+//	public NutsMessage(String subject, String reply, byte[] data, Connection newClient) {
+//        msg = new Message(subject, reply, data);
+//        client = newClient;
+//    }
 	
 	
 	public void reply(byte[] replyContent) {
 		client.subscribe(msg.getSubject(), message -> {
 		    try {
+		    	Objects.requireNonNull(message.getReplyTo(), "The message doesn't know who to reply to!");
 		    	client.publish(message.getReplyTo(), replyContent);
 		    } catch (Exception e) {
 		        e.printStackTrace();
