@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 
 import io.vertx.core.Handler;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
-import tech.greenfield.vertx.nuts.status.InternalServerError;
 
 public class RouteConfigurationMethod extends RouteConfiguration {
 
@@ -52,7 +51,7 @@ public class RouteConfigurationMethod extends RouteConfiguration {
 					e.printStackTrace();
 				} catch (IllegalAccessException | IllegalArgumentException e) {
 					// shouldn't happen
-					throw new InternalServerError("Invalid message handler " + this + ": " + e, e).uncheckedWrap();
+					throw new RuntimeException("Invalid message handler " + this + ": " + e);
 				}
 			};
 		throw new InvalidRouteConfiguration("Invalid arguments list for " + this);
