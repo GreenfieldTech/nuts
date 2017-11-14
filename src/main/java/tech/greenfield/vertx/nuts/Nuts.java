@@ -8,19 +8,23 @@ import java.lang.annotation.Annotation;
 import java.util.Objects;
 
 import io.nats.client.*;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 
 public class Nuts {
+	
+	protected final Logger logger = LoggerFactory.getLogger(Nuts.class);
 
 	private Connection client;
 	
 	public Nuts() {
 		client = null;
-//		try {
-//			client = Nats.connect();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
-//		}
+		try {
+			client = Nats.connect();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
+		}
 	}
 	
 	public Nuts(Connection con) {
@@ -58,9 +62,9 @@ public class Nuts {
 		configure(api, new NutsMessage(client));
 	}
 	
-	private void configure(Controller api, NutsMessage messageWrapper) throws InvalidRouteConfiguration {
+	private void configure(Controller api, NutsMessage message) throws InvalidRouteConfiguration {
 		for (RouteConfiguration conf : api.getRoutes()) {
-			tryConfigureRoute(conf, Subscribe.class, messageWrapper);
+			tryConfigureRoute(conf, Subscribe.class, message);
 		}
 	}
 	
@@ -80,11 +84,20 @@ public class Nuts {
 			
 		if(conf.isController()) {
 			configure(conf.getController(), message);
+			if(message.getSubject().contains("."))
+				message.setSubject(message.getSubject().substring(0, message.getSubject().lastIndexOf(".")));
+			else
+				message.setSubject("null");
 			return;
 		}
 		
 		//reached a leaf
+		logger.info("subscribing message: " + message.getSubject());
 		message.subscribe();
+		if(message.getSubject().contains("."))
+			message.setSubject(message.getSubject().substring(0, message.getSubject().lastIndexOf(".")));
+		else
+			message.setSubject("null");
 	}
 	
 }
