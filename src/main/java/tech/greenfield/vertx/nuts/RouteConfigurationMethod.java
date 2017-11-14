@@ -32,12 +32,7 @@ public class RouteConfigurationMethod extends RouteConfiguration {
 	}
 
 	@Override
-	protected String getName() {
-		return method.getName();
-	}
-
-	@Override
-	Handler<? super NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration {
+	Handler<NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration {
 		method.setAccessible(true);
 		Class<?>[] params = method.getParameterTypes();
 		if (params.length == 1 || params[0].isAssignableFrom(NutsMessage.class) || 

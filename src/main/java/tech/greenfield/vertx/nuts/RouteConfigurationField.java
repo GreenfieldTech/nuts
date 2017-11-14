@@ -30,14 +30,9 @@ public class RouteConfigurationField extends RouteConfiguration {
 		return impl.getController(field);
 	}
 
-	@Override
-	protected String getName() {
-		return field.getName();
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	Handler<? super NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration {
+	Handler<NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration {
 		if (!Handler.class.isAssignableFrom(field.getType()))
 			throw new InvalidRouteConfiguration(this + " is not a valid handler or controller");
 		field.setAccessible(true);

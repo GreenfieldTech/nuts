@@ -62,13 +62,6 @@ public abstract class RouteConfiguration {
 
 	abstract Controller getController();
 
-	@Override
-	public String toString() {
-		return impl.getClass() + "::" + getName();
-	}
-
-	abstract protected String getName();
-
-	abstract Handler<? super NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration;
+	abstract Handler<NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration;
 	
 }

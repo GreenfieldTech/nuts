@@ -17,6 +17,11 @@ public class NutsMessage extends Message{
 		client = newClient;
 	}
 	
+	public NutsMessage(Connection newClient, Message message) {
+		msg = message;
+		client = newClient;
+	}
+	
 	@Override
 	public String getSubject() {
 		if(Objects.isNull(msg))

@@ -11,6 +11,8 @@ import io.nats.client.*;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
+import io.vertx.core.Handler;
+
 public class Nuts {
 	
 	protected final Logger logger = LoggerFactory.getLogger(Nuts.class);
@@ -64,16 +66,16 @@ public class Nuts {
 	
 	private void configure(Controller api, NutsMessage message) throws InvalidRouteConfiguration {
 		for (RouteConfiguration conf : api.getRoutes()) {
-			tryConfigureRoute(conf, Subscribe.class, message);
+			configureMessage(conf, Subscribe.class, message);
 		}
 	}
 	
-	private <T extends Annotation> void tryConfigureRoute(RouteConfiguration conf, Class<T> anot, NutsMessage message) throws InvalidRouteConfiguration {
+	private <T extends Annotation> void configureMessage(RouteConfiguration conf, Class<T> anot, NutsMessage message) throws InvalidRouteConfiguration {
 		for (String uri : conf.uriForAnnotation(anot))
-			tryConfigureMessage(uri, conf, message);
+			configureMessage(uri, conf, message);
 	}
 
-	private void tryConfigureMessage(String uri, RouteConfiguration conf, NutsMessage message) throws InvalidRouteConfiguration {
+	private void configureMessage(String uri, RouteConfiguration conf, NutsMessage message) throws InvalidRouteConfiguration {
 		if (Objects.isNull(uri))
 			return;
 		
@@ -89,8 +91,17 @@ public class Nuts {
 		}
 		
 		//reached a leaf
-		logger.info("subscribing message: " + message.getSubject());
-		message.subscribe();
+		logger.info("Subscribing message: " + message.getSubject());
+		
+		try {
+			Handler<NutsMessage> handler = conf.getHandler();
+			client.subscribe(message.getSubject(), msg -> {
+				handler.handle(new NutsMessage(client, msg));
+			});
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			e.printStackTrace();
+		} 
+		
 		deletePath(message);
 	}
 
