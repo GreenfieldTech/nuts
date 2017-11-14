@@ -7,11 +7,11 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import io.vertx.core.Handler;
-import tech.greenfield.vertx.nuts.annotations.Endpoint;
+import tech.greenfield.vertx.nuts.annotations.Subscribe;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 
 public abstract class RouteConfiguration {
-	static Package annotationPackage = Endpoint.class.getPackage();
+	static Package annotationPackage = Subscribe.class.getPackage();
 
 	private Annotation[] annotations;
 

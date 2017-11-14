@@ -17,21 +17,6 @@ public class NutsMessage extends Message{
 		client = newClient;
 	}
 	
-//	public NutsMessage(String subject, String data, Connection newClient) {
-//        msg = new Message(subject, null, data.getBytes());
-//        client = newClient;
-//    }
-//	
-//	public NutsMessage(String subject, Connection newClient) {
-//        msg = new Message(subject, null, null);
-//        client = newClient;
-//    }
-//	
-//	public NutsMessage(String subject, String reply, byte[] data, Connection newClient) {
-//        msg = new Message(subject, reply, data);
-//        client = newClient;
-//    }
-	
 	@Override
 	public String getSubject() {
 		if(Objects.isNull(msg))
@@ -41,8 +26,6 @@ public class NutsMessage extends Message{
 	
 	@Override
 	public void setSubject(String subject) {
-		if(Objects.isNull(subject))
-			return;
 		msg.setSubject(subject);
 	}
 	
@@ -62,7 +45,7 @@ public class NutsMessage extends Message{
 	}
 
 	
-	public void send(String subject, byte[] sendContent) {
+	public void publish(String subject, byte[] sendContent) {
 		try {
 			client.publish(subject, sendContent);
 		} catch (IOException e) {
@@ -70,23 +53,23 @@ public class NutsMessage extends Message{
 		}
 	}
 	
-	public void send(String subject, String sendContent) {
-		send(subject, sendContent.getBytes());
+	public void publish(String subject, String sendContent) {
+		publish(subject, sendContent.getBytes());
 	}
 	
-	public void send(String sendContent) {
+	public void publish(String sendContent) {
 		Objects.requireNonNull(msg.getSubject(), "The message doesn't have a subject");
 		msg.setData(sendContent.getBytes());
-		send(msg.getSubject(), msg.getData());
+		publish(msg.getSubject(), msg.getData());
 	}
 	
-	public void send() {
+	public void publish() {
 		Objects.requireNonNull(msg.getSubject(), "The message doesn't have a subject");
 		Objects.requireNonNull(msg.getData(), "getSubject");
-		send(msg.getSubject(), msg.getData());
+		publish(msg.getSubject(), msg.getData());
 	}
 	
-	public CompletableFuture<Message> recieve(String subject) {
+	public CompletableFuture<Message> subscribe(String subject) {
 		return CompletableFuture.supplyAsync(() -> {
 			SyncSubscription sub = client.subscribeSync(subject);
 			Message message = null;
@@ -97,6 +80,10 @@ public class NutsMessage extends Message{
 			}
 			return message;
 		});
+	}
+	
+	public CompletableFuture<Message> subscribe() {
+		return subscribe(msg.getSubject());
 	}
 	
 }
