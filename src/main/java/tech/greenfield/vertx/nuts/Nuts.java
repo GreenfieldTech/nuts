@@ -18,6 +18,10 @@ public class Nuts {
 			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
 		}
 	}
+	
+	public Nuts(Connection con) {
+		client = con;
+	}
 
 	public Nuts(String url) {
 		try {
@@ -26,10 +30,6 @@ public class Nuts {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
 		}
-	}
-	
-	public Nuts(Connection con) {
-		client = con;
 	}
 	
 	public void executePath(Controller... apis) throws InvalidRouteConfiguration {

@@ -7,10 +7,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.web.RoutingContext;
-import tech.greenfield.vertx.nuts.annotations.Blocking;
 import tech.greenfield.vertx.nuts.annotations.Endpoint;
-import tech.greenfield.vertx.nuts.annotations.OnFail;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 
 public abstract class RouteConfiguration {
@@ -73,14 +70,5 @@ public abstract class RouteConfiguration {
 	abstract protected String getName();
 
 	abstract Handler<? super NutsMessage> getHandler() throws IllegalArgumentException, IllegalAccessException, InvalidRouteConfiguration;
-
-	boolean isBlocking() {
-		return getAnnotation(Blocking.class).length > 0;
-	}
-
-	boolean isFailHandler() {
-		return getAnnotation(OnFail.class).length > 0;
-	}
-
 	
 }

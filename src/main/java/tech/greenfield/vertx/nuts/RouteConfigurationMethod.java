@@ -5,7 +5,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import io.vertx.core.Handler;
-import io.vertx.ext.web.RoutingContext;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 import tech.greenfield.vertx.nuts.status.InternalServerError;
 

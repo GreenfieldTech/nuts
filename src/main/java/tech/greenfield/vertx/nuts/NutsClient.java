@@ -23,6 +23,7 @@ public class NutsClient {
 	
 	private void configure(Controller api, NutsMessage messageWrapper) throws InvalidRouteConfiguration {
 		for (RouteConfiguration conf : api.getRoutes()) {
+			//what annotations do I need? do I create my own? (sub)
 			tryConfigureRoute(conf, Endpoint.class, messageWrapper);
 			tryConfigureRoute(conf, Put.class, messageWrapper);
 			tryConfigureRoute(conf, Post.class, messageWrapper);
@@ -31,10 +32,10 @@ public class NutsClient {
 	
 	private <T extends Annotation> void tryConfigureRoute(RouteConfiguration conf, Class<T> anot, NutsMessage message) throws InvalidRouteConfiguration {
 		for (String uri : conf.uriForAnnotation(anot))
-			tryConfigureRoute(uri, conf, message);
+			tryConfigureMessage(uri, conf, message);
 	}
 
-	private void tryConfigureRoute(String uri, RouteConfiguration conf, NutsMessage message) throws InvalidRouteConfiguration {
+	private void tryConfigureMessage(String uri, RouteConfiguration conf, NutsMessage message) throws InvalidRouteConfiguration {
 		if (Objects.isNull(uri))
 			return;
 		
@@ -48,8 +49,9 @@ public class NutsClient {
 			return;
 		}
 		
+		//reached a leaf
 		try {
-			conf.getHandler(); // handle/execute this code with that message;
+			conf.getHandler().handle(message); // handle the message?
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
