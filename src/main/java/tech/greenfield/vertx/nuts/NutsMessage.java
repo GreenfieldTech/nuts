@@ -12,7 +12,8 @@ public class NutsMessage extends Message{
 	private Connection client;
 	
 	public NutsMessage(Connection newClient) {
-		msg = new Message();
+		// subject can't be null
+		msg = new Message("null", null, null);
 		client = newClient;
 	}
 	
@@ -31,6 +32,19 @@ public class NutsMessage extends Message{
 //        client = newClient;
 //    }
 	
+	@Override
+	public String getSubject() {
+		if(Objects.isNull(msg))
+			return null;
+		return msg.getSubject();
+	}
+	
+	@Override
+	public void setSubject(String subject) {
+		if(Objects.isNull(subject))
+			return;
+		msg.setSubject(subject);
+	}
 	
 	public void reply(byte[] replyContent) {
 		client.subscribe(msg.getSubject(), message -> {

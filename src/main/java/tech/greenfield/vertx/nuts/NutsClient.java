@@ -4,9 +4,7 @@ import java.lang.annotation.Annotation;
 import java.util.Objects;
 
 import io.nats.client.Connection;
-import tech.greenfield.vertx.nuts.annotations.Endpoint;
-import tech.greenfield.vertx.nuts.annotations.Post;
-import tech.greenfield.vertx.nuts.annotations.Put;
+import tech.greenfield.vertx.nuts.annotations.*;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 
 public class NutsClient {
@@ -23,10 +21,8 @@ public class NutsClient {
 	
 	private void configure(Controller api, NutsMessage messageWrapper) throws InvalidRouteConfiguration {
 		for (RouteConfiguration conf : api.getRoutes()) {
-			//what annotations do I need? do I create my own? (sub)
 			tryConfigureRoute(conf, Endpoint.class, messageWrapper);
-			tryConfigureRoute(conf, Put.class, messageWrapper);
-			tryConfigureRoute(conf, Post.class, messageWrapper);
+			tryConfigureRoute(conf, Sub.class, messageWrapper);
 		}
 	}
 	
@@ -39,7 +35,7 @@ public class NutsClient {
 		if (Objects.isNull(uri))
 			return;
 		
-		if(Objects.isNull(message.getSubject()))
+		if(message.getSubject().equals("null"))
 			message.setSubject(uri);
 		else
 			message.setSubject(message.getSubject() + "." + uri);
@@ -49,7 +45,7 @@ public class NutsClient {
 			return;
 		}
 		
-		//reached a leaf
+		//reached a leaf - what to do now???
 		try {
 			conf.getHandler().handle(message); // handle the message?
 		} catch (IllegalArgumentException | IllegalAccessException e) {
