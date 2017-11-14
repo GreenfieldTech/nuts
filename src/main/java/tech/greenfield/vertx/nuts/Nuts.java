@@ -84,16 +84,17 @@ public class Nuts {
 			
 		if(conf.isController()) {
 			configure(conf.getController(), message);
-			if(message.getSubject().contains("."))
-				message.setSubject(message.getSubject().substring(0, message.getSubject().lastIndexOf(".")));
-			else
-				message.setSubject("null");
+			deletePath(message);
 			return;
 		}
 		
 		//reached a leaf
 		logger.info("subscribing message: " + message.getSubject());
 		message.subscribe();
+		deletePath(message);
+	}
+
+	private void deletePath(NutsMessage message) {
 		if(message.getSubject().contains("."))
 			message.setSubject(message.getSubject().substring(0, message.getSubject().lastIndexOf(".")));
 		else
