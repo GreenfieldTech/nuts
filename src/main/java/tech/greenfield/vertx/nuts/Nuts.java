@@ -20,11 +20,10 @@ public class Nuts {
 	private Connection client;
 	
 	public Nuts() {
-		client = null;
 		try {
 			client = Nats.connect();
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.fatal(e.getStackTrace());
 			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
 		}
 	}
@@ -50,7 +49,7 @@ public class Nuts {
 		client = con;
 	}
 	
-	public Nuts executePath(Controller... apis) throws InvalidRouteConfiguration {
+	public Nuts setupController(Controller... apis) throws InvalidRouteConfiguration {
 		for (Controller api : apis)
 			configure(api);
 		return this;
@@ -61,55 +60,55 @@ public class Nuts {
 	}
 	
 	private void configure(Controller api) throws InvalidRouteConfiguration {
-		configure(api, new NutsMessage(client));
+		configure(api, new String());
 	}
 	
-	private void configure(Controller api, NutsMessage message) throws InvalidRouteConfiguration {
+	private void configure(Controller api, String messageSubject) throws InvalidRouteConfiguration {
 		for (RouteConfiguration conf : api.getRoutes()) {
-			configureMessage(conf, Subscribe.class, message);
+			configureMessage(conf, Subscribe.class, messageSubject);
 		}
 	}
 	
-	private <T extends Annotation> void configureMessage(RouteConfiguration conf, Class<T> anot, NutsMessage message) throws InvalidRouteConfiguration {
-		for (String uri : conf.uriForAnnotation(anot))
-			configureMessage(uri, conf, message);
+	private <T extends Annotation> void configureMessage(RouteConfiguration conf, Class<T> anot, String messageSubject) throws InvalidRouteConfiguration {
+		for (String postfixSubject : conf.subjectForAnnotation(anot))
+			configureMessage(postfixSubject, conf, messageSubject);
 	}
 
-	private void configureMessage(String uri, RouteConfiguration conf, NutsMessage message) throws InvalidRouteConfiguration {
-		if (Objects.isNull(uri))
+	private void configureMessage(String postfixSubject, RouteConfiguration conf, String messageSubject) throws InvalidRouteConfiguration {
+		if (Objects.isNull(postfixSubject))
 			return;
 		
-		if(message.getSubject().equals("null"))
-			message.setSubject(uri);
+		if(messageSubject.isEmpty())
+			messageSubject = postfixSubject;
 		else
-			message.setSubject(message.getSubject() + "." + uri);
+			messageSubject = messageSubject + "." + postfixSubject;
 			
 		if(conf.isController()) {
-			configure(conf.getController(), message);
-			deleteFromPath(message);
+			configure(conf.getController(), messageSubject);
+			deleteFromSubject(messageSubject);
 			return;
 		}
 		
 		//reached a leaf
-		logger.info("Subscribing message: " + message.getSubject());
+		logger.info("Subscribing message: " + messageSubject);
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
-			client.subscribe(message.getSubject(), msg -> {
+			client.subscribe(messageSubject, msg -> {
 				handler.handle(new NutsMessage(client, msg));
 			});
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		} 
 		
-		deleteFromPath(message);
+		deleteFromSubject(messageSubject);
 	}
 
-	private void deleteFromPath(NutsMessage message) {
-		if(message.getSubject().contains("."))
-			message.setSubject(message.getSubject().substring(0, message.getSubject().lastIndexOf(".")));
+	private void deleteFromSubject(String subject) {
+		if(subject.contains("."))
+			subject = subject.substring(0,subject.lastIndexOf("."));
 		else
-			message.setSubject("null");
+			subject = null;
 	}
 	
 }

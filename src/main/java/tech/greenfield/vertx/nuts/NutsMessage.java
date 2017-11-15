@@ -11,12 +11,6 @@ public class NutsMessage extends Message{
 	private Message msg;
 	private Connection client;
 	
-	public NutsMessage(Connection newClient) {
-		// subject can't be null
-		msg = new Message("null", null, null);
-		client = newClient;
-	}
-	
 	public NutsMessage(Connection newClient, Message message) {
 		msg = message;
 		client = newClient;
@@ -24,8 +18,6 @@ public class NutsMessage extends Message{
 	
 	@Override
 	public String getSubject() {
-		if(Objects.isNull(msg))
-			return null;
 		return msg.getSubject();
 	}
 	
@@ -35,8 +27,9 @@ public class NutsMessage extends Message{
 	}
 	
 	public void reply(byte[] replyContent) {
+		if(Objects.isNull(msg.getReplyTo()))
+			throw new RuntimeException("The message doesn't know who to reply to!");
 	    try {
-	    	Objects.requireNonNull(msg.getReplyTo(), "The message doesn't know who to reply to!");
 	    	client.publish(msg.getReplyTo(), replyContent);
 	    } catch (Exception e) {
 	        e.printStackTrace();
@@ -61,15 +54,9 @@ public class NutsMessage extends Message{
 	}
 	
 	public void publish(String sendContent) {
-		Objects.requireNonNull(msg.getSubject(), "The message doesn't have a subject");
-		msg.setData(sendContent.getBytes());
-		publish(msg.getSubject(), msg.getData());
-	}
-	
-	public void publish() {
-		Objects.requireNonNull(msg.getSubject(), "The message doesn't have a subject");
-		Objects.requireNonNull(msg.getData(), "getSubject");
-		publish(msg.getSubject(), msg.getData());
+		if(Objects.isNull(msg.getSubject()))
+			throw new RuntimeException("The message doesn't have a subject");
+		publish(msg.getSubject(), sendContent.getBytes());
 	}
 	
 	public CompletableFuture<Message> subscribe(String subject) {

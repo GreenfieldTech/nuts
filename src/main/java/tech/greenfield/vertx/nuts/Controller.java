@@ -11,7 +11,7 @@ import io.vertx.core.Handler;
 public class Controller {
 
 	protected interface RawVertxHandler extends Handler<NutsMessage> {}
-	protected interface WebHandler extends Handler<NutsMessage> {}
+	protected interface NutsHandler extends Handler<NutsMessage> {}
 	
 	/**
 	 * Helper method for {@link Router} to discover routing endpoints

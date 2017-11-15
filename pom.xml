@@ -8,12 +8,7 @@
 	<version>0.1.0</version>
 	<packaging>jar</packaging>
 	<name>nuts</name>
-	<url>https://github.com/GreenfieldTech/nuts</url>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<generated.statuses.directory>${project.build.directory}/generated-sources/nuts</generated.statuses.directory>
-	</properties>
+<!-- 	<url>https://github.com/GreenfieldTech/nuts</url> -->
 
 	<licenses>
 		<license>
@@ -22,21 +17,6 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
-
-	<scm>
-		<url>https://github.com/GreenfieldTech/nuts</url>
-	</scm>
-
-	<distributionManagement>
-		<repository>
-			<id>packagecloud-GreenfieldTech</id>
-			<url>packagecloud+https://packagecloud.io/GreenfieldTech/oss</url>
-		</repository>
-		<snapshotRepository>
-			<id>packagecloud-GreenfieldTech</id>
-			<url>packagecloud+https://packagecloud.io/GreenfieldTech/oss</url>
-		</snapshotRepository>
-	</distributionManagement>
 
 	<dependencies>
 		<!-- upstream stacks -->
@@ -65,4 +45,16 @@
 		</dependency>
 	</dependencies>
 
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
 </project>

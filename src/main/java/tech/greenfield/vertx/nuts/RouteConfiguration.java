@@ -34,7 +34,7 @@ public abstract class RouteConfiguration {
 		return Arrays.stream(annotations).map(a -> a.annotationType().getPackage()).anyMatch(p -> p.equals(annotationPackage));
 	}
 	
-	<T extends Annotation> String[] uriForAnnotation(Class<T> anot) {
+	<T extends Annotation> String[] subjectForAnnotation(Class<T> anot) {
 		Annotation[] spec = getAnnotation(anot);
 		if (spec.length == 0) return new String[] {};
 		try {

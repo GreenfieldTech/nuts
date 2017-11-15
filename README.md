@@ -73,7 +73,7 @@ This will get the message from "greeting.helloGreeting" and reply to it
 
 After creating your set of `Controller` implementations, deploy them by setting up
 a `Verticle` in the standard way, and set Nuts to execute the controllers.
-The `executePath` method returns a Nuts object that contains the client and lets you get or reconfigure it.
+The `setupController` method returns a Nuts object that contains the client and lets you get or reconfigure it.
 
 #### Sample Vert.x HTTP Server
 
