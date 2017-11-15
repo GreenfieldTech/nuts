@@ -20,10 +20,6 @@ nuts `Controller` class, define fields or methods to handle HTTP requests and an
 #### A Sample Controller
 
 ```
-package com.example.api;
-
-import tech.greenfield.vertx.Nuts.*
-
 Class MyController(){
 
     @Subscribe("sayHello")
@@ -44,10 +40,6 @@ to be accessible under.
 ### A Sample Main and Sub Controllers
 
 ```
-package com.example.api;
-
-import tech.greenfield.vertx.Nuts.*
-
 Class MyController extends Controller {
     @Subscribe("greeting")
     OtherController x;
@@ -55,10 +47,6 @@ Class MyController extends Controller {
 ```
 
 ```
-package com.example.api;
-
-import tech.greenfield.vertx.Nuts.*
-
 Class OtherController extends Controller {
     @Subscribe("helloGreeting")
     void foo(Message msg){
@@ -78,6 +66,6 @@ The `setupController` method returns a Nuts object that contains the client and 
 #### Sample Vert.x HTTP Server
 
 ```
-Nuts nuts = new Nuts().executePath(ctx.getController());
+Nuts nuts = new Nuts().setupController(ctx.getController());
 ```
 

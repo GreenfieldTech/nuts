@@ -14,8 +14,8 @@ public class Controller {
 	protected interface NutsHandler extends Handler<NutsMessage> {}
 	
 	/**
-	 * Helper method for {@link Router} to discover routing endpoints
-	 * @return list of fields that are routing endpoints
+	 * Helper method for Nuts to discover subject paths
+	 * @return list of fields that are subject paths
 	 */
 	List<RouteConfiguration> getRoutes() {
 		return Stream.concat(
@@ -26,11 +26,9 @@ public class Controller {
 	}
 
 	/**
-	 * Helper method for {@link Router} to create the appropriate request
-	 * handler for Vert.X
-	 * @param field routing endpoint handler exposed by this controller
-	 * @return a handler that takes a Vert.x original routing context and
-	 *  wraps it in a local request context before delegating to the routing endpoint
+	 * Helper method for Nuts to create the appropriate handler for the message
+	 * @param field message handler exposed by this controller
+	 * @return a handler that takes a message and handles it
 	 */
 	@SuppressWarnings("unchecked")
 	Handler<NutsMessage> getHandler(Field field) {
@@ -46,10 +44,9 @@ public class Controller {
 	}
 
 	/**
-	 * Helper method for {@link Router} to mount sub-controllers
-	 * @param field routing endpoint exposed by this controller
-	 * @return Controller instance if the routing endpoint is a sub-controller,
-	 * null otherwise 
+	 * Helper method for Nuts to mount sub-controllers
+	 * @param field message handler exposed by this controller
+	 * @return Controller instance if's is a sub-controller, null otherwise 
 	 */
 	Controller getController(Field field) {
 		try {

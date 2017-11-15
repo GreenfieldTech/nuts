@@ -85,7 +85,6 @@ public class Nuts {
 			
 		if(conf.isController()) {
 			configure(conf.getController(), messageSubject);
-			deleteFromSubject(messageSubject);
 			return;
 		}
 		
@@ -101,14 +100,6 @@ public class Nuts {
 			e.printStackTrace();
 		} 
 		
-		deleteFromSubject(messageSubject);
-	}
-
-	private void deleteFromSubject(String subject) {
-		if(subject.contains("."))
-			subject = subject.substring(0,subject.lastIndexOf("."));
-		else
-			subject = null;
 	}
 	
 }
