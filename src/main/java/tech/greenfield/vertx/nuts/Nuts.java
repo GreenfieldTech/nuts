@@ -60,7 +60,7 @@ public class Nuts {
 	}
 	
 	private void configure(Controller api) throws InvalidRouteConfiguration {
-		configure(api, new String());
+		configure(api, "");
 	}
 	
 	private void configure(Controller api, String messageSubject) throws InvalidRouteConfiguration {
@@ -78,22 +78,19 @@ public class Nuts {
 		if (Objects.isNull(postfixSubject))
 			return;
 		
-		if(messageSubject.isEmpty())
-			messageSubject = postfixSubject;
-		else
-			messageSubject = messageSubject + "." + postfixSubject;
+		String subject = messageSubject + "." + postfixSubject;
 			
 		if(conf.isController()) {
-			configure(conf.getController(), messageSubject);
+			configure(conf.getController(), subject);
 			return;
 		}
 		
 		//reached a leaf
-		logger.info("Subscribing message: " + messageSubject);
+		logger.info("Subscribing message: " + subject);
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
-			client.subscribe(messageSubject, msg -> {
+			client.subscribe(subject.replaceFirst("^\\.", ""), msg -> {
 				handler.handle(new NutsMessage(client, msg));
 			});
 		} catch (IllegalArgumentException | IllegalAccessException e) {
