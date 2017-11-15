@@ -1,0 +1,36 @@
+# Build and deploy Nuts
+cache:
+  paths:
+    - .m2/repository
+
+stages:
+    - build
+    - deploy
+    - s3
+    
+package:
+  stage: build
+  script:
+    - 'mvn package'
+  artifacts:
+    paths:
+    - target
+  image: maven
+  
+  
+deploy:
+  stage: deploy
+  script:
+    - 'mvn -DaltDeploymentRepository=repo::default::file:./target/staging deploy'
+    - cp target/nuts-*-fat.jar target/staging/io/cloudonix/nuts/*/
+  artifacts:
+    paths:
+    - target/staging
+  image: maven
+
+s3:
+ stage: s3
+ image: python
+ script:
+  - pip install awscli
+  - aws s3 sync --storage-class REDUCED_REDUNDANCY --acl public-read ./target/staging/ s3://cloudonix-dist/maven2/releases

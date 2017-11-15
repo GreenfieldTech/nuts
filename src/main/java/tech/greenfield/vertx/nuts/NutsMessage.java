@@ -35,14 +35,12 @@ public class NutsMessage extends Message{
 	}
 	
 	public void reply(byte[] replyContent) {
-		client.subscribe(msg.getSubject(), message -> {
-		    try {
-		    	Objects.requireNonNull(message.getReplyTo(), "The message doesn't know who to reply to!");
-		    	client.publish(message.getReplyTo(), replyContent);
-		    } catch (Exception e) {
-		        e.printStackTrace();
-		    }
-		});
+	    try {
+	    	Objects.requireNonNull(msg.getReplyTo(), "The message doesn't know who to reply to!");
+	    	client.publish(msg.getReplyTo(), replyContent);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
 	
 	public void reply(String replyContent) {
