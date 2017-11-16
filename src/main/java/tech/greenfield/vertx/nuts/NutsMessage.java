@@ -67,7 +67,7 @@ public class NutsMessage extends Message{
 	}
 
 	/**
-	 * Publishes a message
+	 * Publishes a message to the given subject
 	 * @param subject  the subject to which the message will be published to
 	 * @param sendContent  the content of the message
 	 * @param reply  the subject to which subscribers should send responses
@@ -84,7 +84,7 @@ public class NutsMessage extends Message{
 	}
 	
 	/**
-	 * Publishes a message
+	 * Publishes a message to the given subject
 	 * @param subject  the subject to which the message will be published to
 	 * @param sendContent  the content of the message
 	 */
@@ -93,7 +93,7 @@ public class NutsMessage extends Message{
 	}
 	
 	/**
-	 * Publishes a message
+	 * Publishes a message to the given subject
 	 * @param subject  the subject to which the message will be published to
 	 * @param sendContent  the content of the message
 	 */
