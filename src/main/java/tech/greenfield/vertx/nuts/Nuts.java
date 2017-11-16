@@ -36,6 +36,11 @@ public class Nuts {
 		configureClient(url);
 	}
 	
+	/**
+	 * Setup the client by connecting to a server in the url. If a client already exists, it will be replaced
+	 * @param url  the path to the server to connect to
+	 * @throws RuntimeException  if the server cannot be connected to
+	 */
 	public void configureClient(String url) {
 		try {
 			client = Nats.connect(url);
@@ -45,16 +50,29 @@ public class Nuts {
 		}
 	}
 	
+	/**
+	 * Setup the client. If a client already exists, it will be replaced
+	 * @param con  the client to setup
+	 */
 	public void configureClient(Connection con) {
 		client = con;
 	}
 	
+	/**
+	 * Execute the methods and/or fields in the controllers
+	 * @param apis  the controllers to execute
+	 * @return the Nuts object that contains the client
+	 */
 	public Nuts setupController(Controller... apis) throws InvalidRouteConfiguration {
 		for (Controller api : apis)
 			configure(api);
 		return this;
 	}
 	
+	/**
+	 * Get the current NATS client
+	 * @return Get the current NATS client
+	 */
 	public Connection getNATSClient() {
 		return client;
 	}
