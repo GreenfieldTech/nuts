@@ -55,6 +55,30 @@ Class OtherController extends Controller {
 }
 ```
 
+### NATS methods
+Nuts has a few methods that support NATS messaging protocol. Here are examples for some of them:
+```
+public class HelloApi extends Controller{
+
+	protected final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@Inject
+	public HelloApi() {
+	}
+
+	@Subscribe("say")
+	public void createUserAccount(NutsMessage msg){
+		msg.reply("Hello to you too");
+		msg.publish("some.subject", "publish content");
+		msg.subscribeAsync("subject.to.listen.to").thenAccept(message -> {
+			//when a message will be recieved on this subject, this code will be executed
+			log.info("Message recieved on subject.to.listen.to with data: " + message.getDataString());
+		});
+	}
+	
+}
+```
+
 This will get the message from "greeting.helloGreeting" and reply to it
 
 ### Initializing

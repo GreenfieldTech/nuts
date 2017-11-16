@@ -26,6 +26,27 @@ public class NutsMessage extends Message{
 		msg.setSubject(subject);
 	}
 	
+	/**
+	 * Helper method for Nuts to get the data of the message as a string
+	 * @return The data of the message
+	 */
+	public String getDataString() {
+		return new String(msg.getData());
+	}
+	
+	/**
+	 * Helper method for Nuts to get the NATS Message object of the message
+	 * @return the NATS message object 
+	 */
+	public Message getMessage() {
+		return msg;
+	}
+	
+	/**
+	 * Replies to that message using it's "replyTo" field as a subject
+	 * @param replyContent  the content to be sent with the reply
+	 * @throws RuntimeException if the replyTo field of the message is empty
+	 */
 	public void reply(byte[] replyContent) {
 		if(Objects.isNull(msg.getReplyTo()))
 			throw new RuntimeException("The message doesn't know who to reply to!");
@@ -36,30 +57,67 @@ public class NutsMessage extends Message{
 	    }
 	}
 	
+	/**
+	 * Replies to that message using it's "replyTo" field as a subject
+	 * @param replyContent  the content to be sent with the reply
+	 * @throws RuntimeException if the replyTo field of the message is empty
+	 */
 	public void reply(String replyContent) {
 		reply(replyContent.getBytes());
 	}
 
-	
-	public void publish(String subject, byte[] sendContent) {
+	/**
+	 * Publishes a message
+	 * @param subject  the subject to which the message will be published to
+	 * @param sendContent  the content of the message
+	 * @param reply  the subject to which subscribers should send responses
+	 */
+	public void publish(String subject, byte[] sendContent, String reply) {
 		try {
-			client.publish(subject, sendContent);
+			if(Objects.nonNull(reply))
+				client.publish(subject, reply, sendContent);
+			else
+				client.publish(subject, sendContent);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void publish(String subject, String sendContent) {
-		publish(subject, sendContent.getBytes());
+	/**
+	 * Publishes a message
+	 * @param subject  the subject to which the message will be published to
+	 * @param sendContent  the content of the message
+	 */
+	public void publish(String subject, byte[] sendContent) {
+		publish(subject, sendContent, null);
 	}
 	
+	/**
+	 * Publishes a message
+	 * @param subject  the subject to which the message will be published to
+	 * @param sendContent  the content of the message
+	 */
+	public void publish(String subject, String sendContent) {
+		publish(subject, sendContent.getBytes(), null);
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject
+	 * @param sendContent  the content of the message
+	 * @throws RuntimeException if the subject field of the message is empty
+	 */
 	public void publish(String sendContent) {
 		if(Objects.isNull(msg.getSubject()))
 			throw new RuntimeException("The message doesn't have a subject");
-		publish(msg.getSubject(), sendContent.getBytes());
+		publish(msg.getSubject(), sendContent.getBytes(), null);
 	}
 	
-	public CompletableFuture<Message> subscribe(String subject) {
+	/**
+	 * Subscribes to a subject
+	 * @param subject  the subject to subscribe to
+	 * @return a completeable future that will resolve when a message will be recieved on this subject, containing the message recieved.
+	 */
+	public CompletableFuture<NutsMessage> subscribeAsync(String subject) {
 		return CompletableFuture.supplyAsync(() -> {
 			SyncSubscription sub = client.subscribeSync(subject);
 			Message message = null;
@@ -68,12 +126,19 @@ public class NutsMessage extends Message{
 			} catch (IOException | InterruptedException e) {
 				e.printStackTrace();
 			}
-			return message;
+			return new NutsMessage(client, message);
 		});
 	}
 	
-	public CompletableFuture<Message> subscribe() {
-		return subscribe(msg.getSubject());
+	/**
+	 * Subscribes to a subject
+	 * @return a completeable future that will resolve when a message will be recieved on this subject, containing the message recieved.
+	 * @throws RuntimeException if the subject field of the message is empty
+	 */
+	public CompletableFuture<NutsMessage> subscribeAsync() {
+		if(Objects.isNull(msg.getSubject()))
+			throw new RuntimeException("The message doesn't have a subject");
+		return subscribeAsync(msg.getSubject());
 	}
 	
 }

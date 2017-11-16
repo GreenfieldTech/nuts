@@ -86,7 +86,7 @@ public class Nuts {
 		}
 		
 		//reached a leaf
-		logger.info("Subscribing message: " + subject);
+		logger.info("Trying subscribing message: " + subject.replaceFirst("^\\.", ""));
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
@@ -96,6 +96,8 @@ public class Nuts {
 		} catch (IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		} 
+		
+		logger.info("Subscribed message: " + subject.replaceFirst("^\\.", ""));
 		
 	}
 	
