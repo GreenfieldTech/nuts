@@ -5,7 +5,7 @@ It lets you subscribe to paths of messages, receive them and handle them.
 
 ## Installation
 
-In your `pom.xml` file, add the repository for Irked (we are currently not hosted
+In your `pom.xml` file, add the repository for Nuts (we are currently not hosted
 in the public Maven repository) as an element under `<project>`:
 
 ```
@@ -17,7 +17,7 @@ in the public Maven repository) as an element under `<project>`:
 </repositories>
 ```
 
-Then add Irked as a dependency:
+Then add Nuts as a dependency:
 
 ```
 <dependency>
@@ -59,7 +59,7 @@ Class MyController(){
 
 Complex routing topologies can be implemented by "mounting" sub-controllers under
 the main controller - by setting fields to additional `Controller` implementations and annotating
-them with the `@Subscriber` annotation with the path set to the method or field you want your sub-controller
+them with the `@Subscribe` annotation with the path set to the method or field you want your sub-controller
 to be accessible under.
 
 ### A Sample Main and Sub Controllers
@@ -80,7 +80,10 @@ Class OtherController extends Controller {
 }
 ```
 
+This will get the message from `greeting.helloGreeting` and reply to it
+
 ### NATS methods
+
 Nuts has a few methods that support NATS messaging protocol. Here are examples for some of them:
 ```
 public class HelloApi extends Controller{
@@ -104,17 +107,24 @@ public class HelloApi extends Controller{
 }
 ```
 
-This will get the message from "greeting.helloGreeting" and reply to it
-
 ### Initializing
 
 After creating your set of `Controller` implementations, deploy them by setting up
 a `Verticle` in the standard way, and set Nuts to execute the controllers.
-The `setupController` method returns a Nuts object that contains the client and lets you get or reconfigure it.
+The `setupController` method returns a Nuts object that contains the client and 
+lets you configure more controllers or reconfigure the Nats client.
 
-#### Sample Vert.x HTTP Server
+#### Sample Vert.x NATS Server
 
 ```
-Nuts nuts = new Nuts().setupController(ctx.getController());
+public class App extends AbstractVerticle {
+
+	@Override
+	public void start(Future<Void> fut) throws Exception {
+        Nuts nuts = new Nuts().setupController(new MainController());
+        fut.complete()
+    }
+    
+}
 ```
 
