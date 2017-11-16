@@ -17,6 +17,16 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	
+	<repositories>
+		<repository>
+			<id>cloudonix-dist</id>
+			<url>http://cloudonix-dist.s3-website-us-west-1.amazonaws.com/maven2/releases</url>
+		</repository>
+		<!-- <repository> <id>GreenfieldTech-oss</id> <url>https://packagecloud.io/GreenfieldTech/oss/maven2</url> 
+			</repository> <repository> <id>jitpack.io</id> <url>https://jitpack.io</url> 
+			</repository> -->
+	</repositories>
 
 	<dependencies>
 		<!-- upstream stacks -->

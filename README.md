@@ -3,6 +3,31 @@
 Nuts is a framework that lets you handle NUTS messages in a hierarchical and convenient way.
 It lets you subscribe to paths of messages, receive them and handle them.
 
+## Installation
+
+In your `pom.xml` file, add the repository for Irked (we are currently not hosted
+in the public Maven repository) as an element under `<project>`:
+
+```
+<repositories>
+  <repository>
+    <id>cloudonix-dist</id>
+    <url>http://cloudonix-dist.s3-website-us-west-1.amazonaws.com/maven2/releases</url>
+  </repository>
+</repositories>
+```
+
+Then add Irked as a dependency:
+
+```
+<dependency>
+	<groupId>tech.greenfield</groupId>
+	<artifactId>nuts</artifactId>
+	<version>[0,)</version>
+</dependency>
+```
+
+
 ## Usage
 
 Under Nuts we use the concept of a "Controller" - a class whose fields and methods are used as

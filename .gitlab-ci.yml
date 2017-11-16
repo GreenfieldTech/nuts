@@ -34,3 +34,4 @@ s3:
  script:
   - pip install awscli
   - aws s3 sync --storage-class REDUCED_REDUNDANCY --acl public-read ./target/staging/ s3://cloudonix-dist/maven2/releases
+  
