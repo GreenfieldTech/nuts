@@ -22,7 +22,7 @@ deploy:
   stage: deploy
   script:
     - 'mvn -DaltDeploymentRepository=repo::default::file:./target/staging deploy'
-    - cp target/nuts-*-fat.jar target/staging/io/cloudonix/nuts/*/
+    - cp target/nuts-*-fat.jar target/staging/tech/greenfield/vertx/nuts/*/
   artifacts:
     paths:
     - target/staging
