@@ -1,6 +1,6 @@
 # Nuts Framework
 
-Nuts is a framework that lets you handle NUTS messages in a hierarchical and convenient way.
+Nuts is a framework that lets you handle NATS messages in a hierarchical and convenient way.
 It lets you subscribe to paths of messages, receive them and handle them.
 
 ## Installation
