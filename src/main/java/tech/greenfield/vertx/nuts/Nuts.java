@@ -109,10 +109,16 @@ public class Nuts {
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
 			client.subscribe(subject.replaceFirst("^\\.", ""), msg -> {
-				handler.handle(new NutsMessage(client, msg));
+				NutsMessage message = new NutsMessage(client, msg);
+				try {
+					handler.handle(message);
+				} catch (Throwable e) {
+					logger.error(e);
+					message.errorReply(e);
+				}
 			});
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
+			logger.error(e);
 		} 
 		
 		logger.info("Subscribed message: " + subject.replaceFirst("^\\.", ""));

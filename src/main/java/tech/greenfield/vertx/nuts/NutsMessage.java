@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import io.nats.client.*;
+import io.vertx.core.json.JsonObject;
 
 public class NutsMessage extends Message{
 	
@@ -64,6 +65,15 @@ public class NutsMessage extends Message{
 	 */
 	public void reply(String replyContent) {
 		reply(replyContent.getBytes());
+	}
+	
+	/**
+	 * Replies to that message using it's "replyTo" field as a subject
+	 * @param replyContent  the content to be sent with the reply
+	 * @throws RuntimeException if the replyTo field of the message is empty
+	 */
+	public void reply(JsonObject replyContent) {
+		reply(replyContent.toString());
 	}
 
 	/**
@@ -141,10 +151,13 @@ public class NutsMessage extends Message{
 		return subscribeAsync(msg.getSubject());
 	}
 	
-	public void publishError(String errorReason) {
-		if(Objects.isNull(msg.getSubject()))
-			throw new RuntimeException("The error doesn't have a subject to send to");
-		publish(msg.getSubject(), ("Message handling failed due to: " + errorReason).getBytes(), null);
+	/**
+	 * Handle errors. Replies to the message ReplyTo() with the error message
+	 * @param thr  the error throwable object
+	 * @throws RuntimeException if the replyTo field of the message is empty
+	 */
+	public void errorReply(Throwable thr) {
+		reply(new JsonObject().put("status", "false").put("message", thr.getMessage()));
 	}
 	
 	

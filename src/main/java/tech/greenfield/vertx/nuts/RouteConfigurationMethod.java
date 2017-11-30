@@ -5,11 +5,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import io.vertx.core.Handler;
+import io.vertx.core.logging.Logger;
+import io.vertx.core.logging.LoggerFactory;
 import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 
 public class RouteConfigurationMethod extends RouteConfiguration {
 
 	private Method method;
+	
+	protected final Logger logger = LoggerFactory.getLogger(RouteConfigurationMethod.class);
 
 	public RouteConfigurationMethod(Controller impl, Method m) {
 		super(impl, m.getAnnotations());
@@ -43,7 +47,8 @@ public class RouteConfigurationMethod extends RouteConfiguration {
 				try {
 					method.invoke(impl, m);
 				} catch (InvocationTargetException e) {
-					e.printStackTrace();
+					logger.error(e);
+					m.errorReply(e.getTargetException());
 				} catch (IllegalAccessException | IllegalArgumentException e) {
 					// shouldn't happen
 					throw new RuntimeException("Invalid message handler " + this + ": " + e);
