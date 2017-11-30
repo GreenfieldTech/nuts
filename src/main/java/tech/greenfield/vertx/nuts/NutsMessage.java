@@ -112,6 +112,15 @@ public class NutsMessage extends Message{
 	}
 	
 	/**
+	 * Publishes a message to the given subject
+	 * @param subject  the subject to which the message will be published to
+	 * @param sendContent  the content of the message
+	 */
+	public void publish(String subject, JsonObject sendContent) {
+		publish(subject, sendContent.toString());
+	}
+	
+	/**
 	 * Publishes a message to it's existing subject
 	 * @param sendContent  the content of the message
 	 * @throws RuntimeException if the subject field of the message is empty
@@ -120,6 +129,15 @@ public class NutsMessage extends Message{
 		if(Objects.isNull(msg.getSubject()))
 			throw new RuntimeException("The message doesn't have a subject");
 		publish(msg.getSubject(), sendContent.getBytes(), null);
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject
+	 * @param sendContent  the content of the message
+	 * @throws RuntimeException if the subject field of the message is empty
+	 */
+	public void publish(JsonObject sendContent) {
+		publish(sendContent.toString());
 	}
 	
 	/**
