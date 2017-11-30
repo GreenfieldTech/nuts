@@ -115,7 +115,7 @@ public class NutsMessage extends Message{
 	/**
 	 * Subscribes to a subject
 	 * @param subject  the subject to subscribe to
-	 * @return a completeable future that will resolve when a message will be recieved on this subject, containing the message recieved.
+	 * @return a completable future that will resolve when a message will be received on this subject, containing the message received.
 	 */
 	public CompletableFuture<NutsMessage> subscribeAsync(String subject) {
 		return CompletableFuture.supplyAsync(() -> {
@@ -132,7 +132,7 @@ public class NutsMessage extends Message{
 	
 	/**
 	 * Subscribes to a subject
-	 * @return a completeable future that will resolve when a message will be recieved on this subject, containing the message recieved.
+	 * @return a completable future that will resolve when a message will be received on this subject, containing the message received.
 	 * @throws RuntimeException if the subject field of the message is empty
 	 */
 	public CompletableFuture<NutsMessage> subscribeAsync() {
@@ -140,5 +140,13 @@ public class NutsMessage extends Message{
 			throw new RuntimeException("The message doesn't have a subject");
 		return subscribeAsync(msg.getSubject());
 	}
+	
+	public void publishError(String errorReason) {
+		if(Objects.isNull(msg.getSubject()))
+			throw new RuntimeException("The error doesn't have a subject to send to");
+		publish(msg.getSubject(), ("Message handling failed due to: " + errorReason).getBytes(), null);
+	}
+	
+	
 	
 }
