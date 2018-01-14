@@ -81,6 +81,10 @@ public class Nuts implements ReconnectedCallback {
 		return this;
 	}
 	
+	public CompletableFuture<Nuts> whenConnected() {
+		return connectedCondition;
+	}
+	
 	/**
 	 * Get the current NATS client
 	 * @return Get the current NATS client
@@ -140,7 +144,7 @@ public class Nuts implements ReconnectedCallback {
 	@Override
 	public void onReconnect(ConnectionEvent event) {
 		if (!connectedCondition.isDone())
-			connectedCondition.complete(null);
+			connectedCondition.complete(this);
 	}
 	
 }
