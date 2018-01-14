@@ -6,6 +6,7 @@ import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import io.nats.client.*;
 import io.vertx.core.logging.Logger;
@@ -13,15 +14,17 @@ import io.vertx.core.logging.LoggerFactory;
 
 import io.vertx.core.Handler;
 
-public class Nuts {
+public class Nuts implements ReconnectedCallback {
 	
 	protected final Logger logger = LoggerFactory.getLogger(Nuts.class);
 
 	private Connection client;
+
+	private CompletableFuture<Nuts> connectedCondition = new CompletableFuture<>();
 	
 	public Nuts() {
 		try {
-			client = Nats.connect();
+			client = Nats.connect(Nats.DEFAULT_URL, getConnectOpts());
 		} catch (IOException e) {
 			logger.fatal(e.getStackTrace());
 			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
@@ -43,19 +46,28 @@ public class Nuts {
 	 */
 	public void configureClient(String url) {
 		try {
-			client = Nats.connect(url);
+			client = Nats.connect(url, getConnectOpts());
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
 		}
 	}
 	
+	private Options getConnectOpts() {
+		return new Options.Builder()
+				.reconnectedCb(this)
+				.build();
+	}
+
 	/**
 	 * Setup the client. If a client already exists, it will be replaced
 	 * @param con  the client to setup
 	 */
 	public void configureClient(Connection con) {
 		client = con;
+		client.setReconnectedCallback(this);
+		if (client.isConnected())
+			connectedCondition.complete(this);
 	}
 	
 	/**
@@ -123,6 +135,12 @@ public class Nuts {
 		
 		logger.info("Subscribed message: " + subject.replaceFirst("^\\.", ""));
 		
+	}
+
+	@Override
+	public void onReconnect(ConnectionEvent event) {
+		if (!connectedCondition.isDone())
+			connectedCondition.complete(null);
 	}
 	
 }
