@@ -120,7 +120,7 @@ public class Nuts implements ReconnectedCallback {
 		}
 		
 		//reached a leaf
-		logger.info("Trying subscribing message: " + subject.replaceFirst("^\\.", ""));
+		logger.debug("Trying subscribing message: " + subject.replaceFirst("^\\.", ""));
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
@@ -137,7 +137,7 @@ public class Nuts implements ReconnectedCallback {
 			logger.error(e);
 		} 
 		
-		logger.info("Subscribed message: " + subject.replaceFirst("^\\.", ""));
+		logger.debug("Subscribed message: " + subject.replaceFirst("^\\.", ""));
 		
 	}
 
