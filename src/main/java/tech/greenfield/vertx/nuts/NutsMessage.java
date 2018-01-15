@@ -178,6 +178,4 @@ public class NutsMessage extends Message{
 		reply(new JsonObject().put("status", "false").put("message", thr.getMessage()));
 	}
 	
-	
-	
 }

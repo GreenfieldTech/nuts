@@ -8,11 +8,13 @@ import java.lang.annotation.Annotation;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
+import io.github.jklingsporn.vertx.jooq.future.util.FutureTool;
 import io.nats.client.*;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 
 public class Nuts implements ReconnectedCallback {
 	
@@ -22,21 +24,20 @@ public class Nuts implements ReconnectedCallback {
 
 	private CompletableFuture<Nuts> connectedCondition = new CompletableFuture<>();
 	
-	public Nuts() {
-		try {
-			client = Nats.connect(Nats.DEFAULT_URL, getConnectOpts());
-		} catch (IOException e) {
-			logger.fatal(e.getStackTrace());
-			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
-		}
-	}
+	Vertx vertx;
 	
-	public Nuts(Connection con) {
+	public Nuts(Connection con, Vertx vertx) {
+		this.vertx = vertx;
 		configureClient(con);
 	}
 
-	public Nuts(String url) {
+	public Nuts(String url, Vertx vertx) {
+		this.vertx = vertx;
 		configureClient(url);
+	}
+	
+	public Nuts(Vertx vertx) {
+		this(Nats.DEFAULT_URL, vertx);
 	}
 	
 	/**
@@ -45,12 +46,16 @@ public class Nuts implements ReconnectedCallback {
 	 * @throws RuntimeException  if the server cannot be connected to
 	 */
 	public void configureClient(String url) {
-		try {
-			client = Nats.connect(url, getConnectOpts());
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Cannot connect to server because of: " + e.getMessage());
-		}
+		connectedCondition = FutureTool.executeBlocking(h -> {
+			try {
+				client = Nats.connect(url, getConnectOpts());
+				client.setReconnectedCallback(this);
+				h.complete(this);
+			} catch (IOException e) {
+				e.printStackTrace();
+				h.fail(new RuntimeException("Cannot connect to server because of: " + e.getMessage()));
+			}
+		}, vertx);
 	}
 	
 	private Options getConnectOpts() {
