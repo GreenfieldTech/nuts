@@ -57,4 +57,8 @@ public class RouteConfigurationMethod extends RouteConfiguration {
 		throw new InvalidRouteConfiguration("Invalid arguments list for " + this);
 	}
 
+	public String toString() {
+		return "[Routing method:" + method.toString() + "]";
+	}
+
 }
