@@ -39,4 +39,7 @@ public class RouteConfigurationField extends RouteConfiguration {
 		return (Handler<NutsMessage>)field.get(impl);
 	}
 
+	public String toString() {
+		return "[Routing field:" + field.toString() + "]";
+	}
 }
