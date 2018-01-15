@@ -121,15 +121,8 @@ public class App extends AbstractVerticle {
 
 	@Override
 	public void start(Future<Void> fut) throws Exception {
-        new Nuts("http://0.0.0.0:4222", getVertx()).whenConnected().thenAccept(nuts -> {
-			try {
-				nuts.setupController(ctx.getController());
-				fut.complete();
-			} catch (InvalidRouteConfiguration e) {
-				e.printStackTrace();
-				fut.fail(e);
-			}
-		});
+        Nuts nuts = new Nuts().setupController(new MainController());
+        fut.complete()
     }
     
 }

@@ -45,11 +45,6 @@
 		    <artifactId>jnats</artifactId>
 		    <version>1.0</version>
 		</dependency>
-		<dependency>
-			<groupId>io.github.jklingsporn</groupId>
-			<artifactId>vertx-jooq-future</artifactId>
-			<version>[2.3,)</version>
-		</dependency>
 
 		<!--Test dependencies -->
 		<dependency>

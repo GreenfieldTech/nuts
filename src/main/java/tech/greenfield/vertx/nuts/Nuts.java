@@ -6,38 +6,29 @@ import tech.greenfield.vertx.nuts.exceptions.InvalidRouteConfiguration;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-import io.github.jklingsporn.vertx.jooq.future.util.FutureTool;
 import io.nats.client.*;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 
-public class Nuts implements ReconnectedCallback {
+public class Nuts {
 	
 	protected final Logger logger = LoggerFactory.getLogger(Nuts.class);
 
 	private Connection client;
 
-	private CompletableFuture<Nuts> connectedCondition = new CompletableFuture<>();
-	
-	Vertx vertx;
-	
-	public Nuts(Connection con, Vertx vertx) {
-		this.vertx = vertx;
+	public Nuts(Connection con) {
 		configureClient(con);
 	}
 
-	public Nuts(String url, Vertx vertx) {
-		this.vertx = vertx;
+	public Nuts(String url) {
 		configureClient(url);
 	}
 	
-	public Nuts(Vertx vertx) {
-		this(Nats.DEFAULT_URL, vertx);
+	public Nuts() {
+		this(Nats.DEFAULT_URL);
 	}
 	
 	/**
@@ -46,22 +37,11 @@ public class Nuts implements ReconnectedCallback {
 	 * @throws RuntimeException  if the server cannot be connected to
 	 */
 	public void configureClient(String url) {
-		connectedCondition = FutureTool.executeBlocking(h -> {
-			try {
-				client = Nats.connect(url, getConnectOpts());
-				client.setReconnectedCallback(this);
-				h.complete(this);
-			} catch (IOException e) {
-				e.printStackTrace();
-				h.fail(new RuntimeException("Cannot connect to server because of: " + e.getMessage()));
-			}
-		}, vertx);
-	}
-	
-	private Options getConnectOpts() {
-		return new Options.Builder()
-				.reconnectedCb(this)
-				.build();
+		try {
+			client = Nats.connect(url);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -70,9 +50,6 @@ public class Nuts implements ReconnectedCallback {
 	 */
 	public void configureClient(Connection con) {
 		client = con;
-		client.setReconnectedCallback(this);
-		if (client.isConnected())
-			connectedCondition.complete(this);
 	}
 	
 	/**
@@ -84,10 +61,6 @@ public class Nuts implements ReconnectedCallback {
 		for (Controller api : apis)
 			configure(api);
 		return this;
-	}
-	
-	public CompletableFuture<Nuts> whenConnected() {
-		return connectedCondition;
 	}
 	
 	/**
@@ -144,12 +117,6 @@ public class Nuts implements ReconnectedCallback {
 		
 		logger.debug("Subscribed message: " + subject.replaceFirst("^\\.", ""));
 		
-	}
-
-	@Override
-	public void onReconnect(ConnectionEvent event) {
-		if (!connectedCondition.isDone())
-			connectedCondition.complete(this);
 	}
 	
 }
