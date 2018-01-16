@@ -72,6 +72,10 @@ public class Nuts {
 		return client;
 	}
 	
+	public void close() {
+		client.close();
+	}
+	
 	private void configure(Controller api) throws InvalidRouteConfiguration {
 		configure(api, "");
 	}
