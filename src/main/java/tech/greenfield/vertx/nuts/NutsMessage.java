@@ -49,13 +49,13 @@ public class NutsMessage extends Message{
 	 * @throws RuntimeException if the replyTo field of the message is empty
 	 */
 	public void reply(byte[] replyContent) {
-		if(Objects.isNull(msg.getReplyTo()))
-			throw new RuntimeException("The message doesn't know who to reply to!");
-	    try {
-	    	client.publish(msg.getReplyTo(), replyContent);
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
+		if (Objects.isNull(msg.getReplyTo()))
+			throw new IllegalArgumentException("The message doesn't know who to reply to!");
+		try {
+			client.publish(msg.getReplyTo(), replyContent);
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Unexpected error replying",e);
+		}
 	}
 	
 	/**
@@ -89,7 +89,7 @@ public class NutsMessage extends Message{
 			else
 				client.publish(subject, sendContent);
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IllegalArgumentException("Unexpected error publishing content",e);
 		}
 	}
 	
@@ -152,7 +152,7 @@ public class NutsMessage extends Message{
 			try {
 				message = sub.nextMessage();
 			} catch (IOException | InterruptedException e) {
-				e.printStackTrace();
+				throw new IllegalArgumentException("Unexpected error retrieving a message",e);
 			}
 			return new NutsMessage(client, message);
 		});

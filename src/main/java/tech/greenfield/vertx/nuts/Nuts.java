@@ -40,7 +40,8 @@ public class Nuts {
 		try {
 			client = Nats.connect(url);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.fatal("Unexpected error from NATS",e);
+			throw new IllegalArgumentException(e);
 		}
 	}
 
@@ -69,6 +70,10 @@ public class Nuts {
 	 */
 	public Connection getNATSClient() {
 		return client;
+	}
+	
+	public void close() {
+		client.close();
 	}
 	
 	private void configure(Controller api) throws InvalidRouteConfiguration {
@@ -126,12 +131,12 @@ public class Nuts {
 					handler.handle(message);
 					logger.info("handled message: " + message);
 				} catch (Throwable e) {
-					logger.error(e);
+					logger.error("Error handling message in controller " + conf, e);
 					message.errorReply(e);
 				}
 			});
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			logger.error(e);
+			logger.error("Unexpected error in calling controller",e);
 		} 
 		
 		logger.debug("Subscribed message: " + subject.replaceFirst("^\\.", ""));
