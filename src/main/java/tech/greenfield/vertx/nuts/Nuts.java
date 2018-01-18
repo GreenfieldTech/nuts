@@ -103,7 +103,7 @@ public class Nuts {
 		}
 		
 		//reached a leaf
-		logger.info("Trying subscribing message: " + subject.replaceFirst("^\\.", "") + " with method: " + conf);
+		logger.debug("Trying subscribing message: " + subject.replaceFirst("^\\.", "") + " with method: " + conf);
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
@@ -111,7 +111,6 @@ public class Nuts {
 				NutsMessage message = new NutsMessage(client, msg);
 				try {
 					handler.handle(message);
-					logger.info("handled message: " + message);
 				} catch (Throwable e) {
 					logger.error(e);
 					message.errorReply(e);
