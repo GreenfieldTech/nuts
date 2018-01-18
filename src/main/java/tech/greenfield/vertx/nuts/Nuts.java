@@ -95,23 +95,15 @@ public class Nuts {
 		if (Objects.isNull(postfixSubject))
 			return;
 		
-		Annotation[] annotations = conf.getAnnotations();
-		logger.info("annotations: " + annotations + " for subject: " + messageSubject);
-		//a loop that creates the new subject with all possible postfixes (annotations)
-			//enter all of the following code here
-		
 		String subject = messageSubject + "." + postfixSubject;
-		String starSubject =  messageSubject + ".*";
 			
 		if(conf.isController()) {
 			configure(conf.getController(), subject);
-			configure(conf.getController(), starSubject);
 			return;
 		}
 		
 		//reached a leaf
-		logger.debug("Trying subscribing message: " + subject.replaceFirst("^\\.", ""));
-		logger.debug("Trying subscribing message: " + starSubject.replaceFirst("^\\.", ""));
+		logger.info("Trying subscribing message: " + subject.replaceFirst("^\\.", "") + " with method: " + conf);
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
@@ -122,16 +114,6 @@ public class Nuts {
 					logger.info("handled message: " + message);
 				} catch (Throwable e) {
 					logger.error(e);
-					message.errorReply(e);
-				}
-			});
-			client.subscribe(starSubject.replaceFirst("^\\.", ""), msg -> {
-				NutsMessage message = new NutsMessage(client, msg);
-				try {
-					handler.handle(message);
-					logger.info("handled message: " + message);
-				} catch (Throwable e) {
-					logger.error("Error handling message in controller " + conf, e);
 					message.errorReply(e);
 				}
 			});
