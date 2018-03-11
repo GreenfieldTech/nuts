@@ -178,4 +178,128 @@ public class NutsMessage extends Message{
 		reply(new JsonObject().put("status", "false").put("message", thr.getMessage()));
 	}
 	
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(byte[] sendContent) {
+		return request(msg.getSubject(), sendContent);
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String sendContent) {
+		return request(msg.getSubject(), sendContent.getBytes());
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(JsonObject sendContent) {
+		return request(sendContent.toString());
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @param timeOut  the time (in milliseconds) to wait for the reply message to arrive
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(byte[] sendContent, long timeOut) {
+		return request(msg.getSubject(), sendContent, timeOut);
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @param timeOut  the time (in milliseconds) to wait for the reply message to arrive
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String sendContent, long timeOut) {
+		return request(msg.getSubject(), sendContent.getBytes(), timeOut);
+	}
+	
+	/**
+	 * Publishes a message to it's existing subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @param timeOut  the time (in milliseconds) to wait for the reply message to arrive
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(JsonObject sendContent, long timeOut) {
+		return request(sendContent.toString(), timeOut);
+	}
+	
+	/**
+	 * Publishes a message to the given subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String subject, String sendContent){
+		return request(subject, sendContent.getBytes());
+	}
+	
+	/**
+	 * Publishes a message to the given subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String subject, JsonObject sendContent){
+		return request(subject, sendContent.toString());
+	}
+	
+	/**
+	 * Publishes a message to the given subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String subject, byte[] sendContent){
+		return request(subject, sendContent, -1);
+	}
+	
+	/**
+	 * Publishes a message to the given subject and receiving the response message
+	 * @param sendContent  the content of the message
+	 * @param timeOut  the time (in milliseconds) to wait for the reply message to arrive
+	 * @return a completable future that will resolve when a message will be received, containing the message received.
+	 * @throws IOException | InterruptedException if the request fails to send
+	 * 
+	 */
+	public CompletableFuture<NutsMessage> request(String subject, byte[] sendContent, long timeOut) {
+		return CompletableFuture.supplyAsync(() -> {
+			try {
+				return client.request(subject, sendContent);
+			} catch (IOException | InterruptedException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}).thenApply(msg -> {
+			return new NutsMessage(client, msg);
+		});
+	}
+	
 }

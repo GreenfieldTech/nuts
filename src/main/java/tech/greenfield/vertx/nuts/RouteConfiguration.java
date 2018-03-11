@@ -55,6 +55,10 @@ public abstract class RouteConfiguration {
 			throw new RuntimeException(e);
 		}
 	}
+	
+	public Annotation[] getAnnotations() {
+		return annotations;
+	}
 
 	abstract protected <T extends Annotation> T[] getAnnotation(Class<T> anot);
 

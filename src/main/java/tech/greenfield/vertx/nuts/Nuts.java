@@ -72,6 +72,9 @@ public class Nuts {
 		return client;
 	}
 	
+	/**
+	 * Close the connection to the NATS client
+	 */
 	public void close() {
 		client.close();
 	}
@@ -103,7 +106,7 @@ public class Nuts {
 		}
 		
 		//reached a leaf
-		logger.debug("Trying subscribing message: " + subject.replaceFirst("^\\.", ""));
+		logger.debug("Trying subscribing message: " + subject.replaceFirst("^\\.", "") + " with method: " + conf);
 		
 		try {
 			Handler<NutsMessage> handler = conf.getHandler();
@@ -112,7 +115,7 @@ public class Nuts {
 				try {
 					handler.handle(message);
 				} catch (Throwable e) {
-					logger.error("Error handling message in controller " + conf, e);
+					logger.error(e);
 					message.errorReply(e);
 				}
 			});
