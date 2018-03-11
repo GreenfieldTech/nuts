@@ -72,6 +72,9 @@ public class Nuts {
 		return client;
 	}
 	
+	/**
+	 * Close the connection to the NATS client
+	 */
 	public void close() {
 		client.close();
 	}
